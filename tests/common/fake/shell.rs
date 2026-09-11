@@ -55,11 +55,14 @@ pub fn run(config: &FakeConfig, line: &str) -> Exit {
                 "{}\n",
                 config.props.get(name).cloned().unwrap_or_default()
             )),
-            None => ok(config
-                .props
-                .iter()
-                .map(|(k, v)| format!("[{k}]: [{v}]\n"))
-                .collect::<String>()),
+            None => {
+                let lines: Vec<String> = config
+                    .props
+                    .iter()
+                    .map(|(k, v)| format!("[{k}]: [{v}]\n"))
+                    .collect();
+                ok(lines.concat())
+            }
         },
         Some("echo") => ok(format!("{}\n", args[1..].join(" "))),
         Some("true") => ok(""),

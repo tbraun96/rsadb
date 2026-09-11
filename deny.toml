@@ -1,0 +1,42 @@
+[graph]
+all-features = true
+
+[advisories]
+version = 2
+yanked = "deny"
+ignore = [
+    # Marvin attack (timing side channel in RSA PKCS#1 v1.5 decryption/signing).
+    # rsadb signs exactly one 20-byte token per connection with a key that
+    # never leaves the host; the peer sees a single signature and cannot make
+    # repeated timing measurements. No fixed 0.9.x release exists yet; revisit
+    # when the constant-time rsa 0.10 line is stable. Tracked in SECURITY.md.
+    { id = "RUSTSEC-2023-0071", reason = "single local signature per connection; no oracle exposed" },
+]
+
+[licenses]
+version = 2
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "Zlib",
+    "MPL-2.0",
+    "CC0-1.0",
+    "0BSD",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
