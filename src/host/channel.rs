@@ -28,11 +28,13 @@ impl HostChannel {
 impl Channel for HostChannel {
     async fn recv(&mut self) -> Result<Option<Bytes>> {
         let mut buf = BytesMut::with_capacity(CHUNK);
-        let n = self.stream.read_buf(&mut buf).await?;
-        if n == 0 {
-            Ok(None)
-        } else {
-            Ok(Some(buf.freeze()))
+        match self.stream.read_buf(&mut buf).await {
+            Ok(0) => Ok(None),
+            Ok(_) => Ok(Some(buf.freeze())),
+            // The server hung up after its reply; everything it sent was
+            // already delivered, so treat the reset as end of stream.
+            Err(e) if e.kind() == std::io::ErrorKind::ConnectionReset => Ok(None),
+            Err(e) => Err(e.into()),
         }
     }
 

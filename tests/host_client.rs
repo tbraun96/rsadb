@@ -83,7 +83,12 @@ async fn serve(mut socket: TcpStream) {
                 .unwrap();
         }
     }
+    // Send FIN, then drain whatever the client still writes (e.g. a shell v2
+    // close-stdin frame) until it hangs up. Closing with unread bytes would
+    // make the kernel send RST and the client see ECONNRESET instead of EOF.
     let _ = socket.shutdown().await;
+    let mut sink = [0u8; 1024];
+    while matches!(socket.read(&mut sink).await, Ok(n) if n > 0) {}
 }
 
 async fn start_server() -> HostClient {

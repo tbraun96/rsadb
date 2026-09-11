@@ -16,8 +16,8 @@ use std::time::Duration;
 /// A change in the set of attached ADB devices.
 #[derive(Debug, Clone)]
 pub enum UsbEvent {
-    /// A device exposing an ADB interface appeared.
-    Attached(UsbDeviceInfo),
+    /// A device exposing an ADB interface appeared (boxed: `DeviceInfo` is large on Windows).
+    Attached(Box<UsbDeviceInfo>),
     /// A previously reported device went away.
     Detached(DeviceId),
 }
@@ -48,7 +48,7 @@ pub fn watch_usb() -> Result<impl Stream<Item = Result<UsbEvent>> + Send> {
             (
                 devices
                     .into_iter()
-                    .map(|d| Ok(UsbEvent::Attached(d)))
+                    .map(|d| Ok(UsbEvent::Attached(Box::new(d))))
                     .collect::<Vec<_>>(),
                 ids,
             )
@@ -78,7 +78,7 @@ fn hotplug_events(
                     if let Some(interface_number) = adb_interface(&info) {
                         known.insert(info.id());
                         let device = UsbDeviceInfo::from_parts(info, interface_number);
-                        return Some((Ok(UsbEvent::Attached(device)), (watch, known)));
+                        return Some((Ok(UsbEvent::Attached(Box::new(device))), (watch, known)));
                     }
                 }
                 HotplugEvent::Disconnected(id) => {
@@ -108,7 +108,11 @@ pub fn poll_usb(interval: Duration) -> impl Stream<Item = Result<UsbEvent>> + Se
                 .into_iter()
                 .map(|id| Ok(UsbEvent::Detached(*id)))
                 .collect();
-            events.extend(added.into_iter().map(|d| Ok(UsbEvent::Attached(d.clone()))));
+            events.extend(
+                added
+                    .into_iter()
+                    .map(|d| Ok(UsbEvent::Attached(Box::new(d.clone())))),
+            );
             Some((events, (current, false)))
         },
     )
