@@ -9,6 +9,9 @@ pub mod auth;
 pub mod channel;
 pub mod device;
 pub mod error;
+#[cfg(feature = "host-client")]
+#[cfg_attr(docsrs, doc(cfg(feature = "host-client")))]
+pub mod host;
 pub mod services;
 pub mod session;
 pub mod transport;
