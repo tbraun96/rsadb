@@ -1,0 +1,59 @@
+[package]
+name = "rsadb"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["Thomas Braun"]
+description = "Pure-Rust Android Debug Bridge (ADB) client: USB and TCP, no adb binary, no C"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tbraun96/rsadb"
+homepage = "https://github.com/tbraun96/rsadb"
+documentation = "https://docs.rs/rsadb"
+readme = "README.md"
+keywords = ["adb", "android", "usb", "debugging", "pure-rust"]
+categories = ["development-tools", "hardware-support", "command-line-utilities"]
+exclude = [".github/", "docs/", "tasks/", "deny.toml", "rustfmt.toml"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["usb", "tcp", "host-client"]
+usb = ["dep:nusb"]
+tcp = []
+host-client = []
+hardware = []
+
+[dependencies]
+base64 = "0.22"
+bytes = "1"
+futures = "0.3"
+nusb = { version = "0.2", optional = true }
+rand = "0.8"
+rsa = { version = "0.9", features = ["pem"] }
+sha1 = { version = "0.10", features = ["oid"] }
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "sync", "net", "io-util", "time", "macros", "fs"] }
+tracing = "0.1"
+clap = { version = "4", features = ["derive"] }
+
+[dev-dependencies]
+num-bigint = "0.4"
+proptest = "1"
+tempfile = "3"
+tokio = { version = "1", features = ["full"] }
+
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+must_use_candidate = "allow"
