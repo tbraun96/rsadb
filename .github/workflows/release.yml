@@ -38,9 +38,13 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
             archive: tar.gz
-          - os: macos-13
+          # Cross-compiled on the Apple-silicon runner: GitHub retired the Intel macOS runners,
+          # and a job that asks for one queues forever. Tests for this target run natively on
+          # aarch64 above; the x86_64 binary is built and packaged here without them.
+          - os: macos-latest
             target: x86_64-apple-darwin
             archive: tar.gz
+            cross: true
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             archive: zip
@@ -51,6 +55,7 @@ jobs:
           targets: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v2
       - name: Test
+        if: ${{ !matrix.cross }}
         run: cargo test --locked --release --target ${{ matrix.target }}
       - name: Build CLI
         run: cargo build --locked --release --bin rsadb --target ${{ matrix.target }}
