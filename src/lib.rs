@@ -7,13 +7,16 @@
 
 pub mod auth;
 pub mod channel;
+pub mod device;
 pub mod error;
+pub mod services;
 pub mod session;
 pub mod transport;
 pub mod wire;
 
 pub use auth::HostKey;
 pub use channel::{Channel, Connection};
+pub use device::Device;
 pub use error::{Error, Result};
 pub use session::{Session, Stream};
 pub use transport::Transport;
