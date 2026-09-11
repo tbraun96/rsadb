@@ -5,7 +5,9 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+pub mod auth;
 pub mod error;
 pub mod wire;
 
+pub use auth::HostKey;
 pub use error::{Error, Result};
