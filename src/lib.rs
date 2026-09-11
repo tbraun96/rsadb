@@ -6,10 +6,14 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod auth;
+pub mod channel;
 pub mod error;
+pub mod session;
 pub mod transport;
 pub mod wire;
 
 pub use auth::HostKey;
+pub use channel::{Channel, Connection};
 pub use error::{Error, Result};
+pub use session::{Session, Stream};
 pub use transport::Transport;
