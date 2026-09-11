@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/tbraun96/rsadb/security/advisories/new
+    about: Use a private GitHub Security Advisory for auth bypass, key handling, memory-safety, or command injection issues.

@@ -1,0 +1,98 @@
+name: Bug report
+description: Report a defect in the rsadb library or CLI
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security vulnerabilities here. Use
+        https://github.com/tbraun96/rsadb/security/advisories/new instead.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal code or CLI invocation that triggers the problem.
+      placeholder: |
+        1. rsadb devices
+        2. rsadb -s <serial> shell getprop ro.build.version.release
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include the exact error value or output.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: rsadb version
+      placeholder: "0.1.0 or a commit hash"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Host operating system
+      placeholder: "macOS 15.1, Ubuntu 24.04, Windows 11"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options:
+        - USB (nusb)
+        - TCP (direct to adbd)
+        - adb server (Google adb)
+        - Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: android
+    attributes:
+      label: Android version
+      placeholder: "Android 14, API 34"
+
+  - type: dropdown
+    id: adb-server
+    attributes:
+      label: Was a Google adb server running at the time?
+      description: A running adb server claims the USB interface and can interfere with direct USB access.
+      options:
+        - "No"
+        - "Yes"
+        - "Unsure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Run with `RUST_LOG=rsadb=trace` and paste the relevant output. Remove serial numbers or other identifiers you do not want public.
+      render: text
