@@ -19,7 +19,8 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
-default = ["usb", "tcp", "host-client"]
+default = ["usb", "tcp", "host-client", "cli"]
+cli = ["dep:clap"]
 usb = ["dep:nusb"]
 tcp = []
 host-client = []
@@ -36,7 +37,7 @@ sha1 = { version = "0.10", features = ["oid"] }
 thiserror = "2"
 tokio = { version = "1", features = ["rt-multi-thread", "sync", "net", "io-util", "time", "macros", "fs"] }
 tracing = "0.1"
-clap = { version = "4", features = ["derive"] }
+clap = { version = "4", features = ["derive"], optional = true }
 
 [dev-dependencies]
 num-bigint = "0.4"
@@ -44,6 +45,10 @@ proptest = "1"
 tempfile = "3"
 tokio = { version = "1", features = ["full"] }
 
+[[bin]]
+name = "rsadb"
+path = "src/bin/rsadb/main.rs"
+required-features = ["usb", "tcp", "host-client", "cli"]
 
 [lints.rust]
 unsafe_code = "forbid"

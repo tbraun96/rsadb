@@ -23,6 +23,7 @@
 //! * `usb` (default) — direct USB transport through `nusb`.
 //! * `tcp` (default) — direct TCP transport (`adb connect` targets, emulators).
 //! * `host-client` (default) — client for a running Google adb server.
+//! * `cli` (default) — the `rsadb` command-line binary (pulls in `clap`).
 //! * `hardware` — enables ignored integration tests that need a real device.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
