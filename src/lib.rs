@@ -49,3 +49,8 @@ pub use device::Device;
 pub use error::{Error, Result};
 pub use session::{Session, Stream};
 pub use transport::Transport;
+
+/// Compiles the code blocks in README.md as doctests.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+mod readme_doctests {}

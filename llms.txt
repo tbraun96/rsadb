@@ -1,0 +1,47 @@
+# rsadb
+
+> Pure-Rust Android Debug Bridge (ADB) client library and CLI. Talks to `adbd` directly over USB (via the `nusb` crate) or TCP with no `adb` binary, no adb server, no libusb and no C code; can also drive a running Google adb server. Async (tokio). MIT OR Apache-2.0. MSRV 1.85. Repository: https://github.com/tbraun96/rsadb. Docs: https://docs.rs/rsadb.
+
+## What it does
+
+- Implements the ADB transport protocol: 24-byte little-endian headers (`CNXN`, `AUTH`, `OPEN`, `OKAY`, `WRTE`, `CLSE`, `STLS`), version 0x01000001, 1 MiB payloads, checksum only for legacy peers.
+- RSA host-key authentication compatible with Google adb: reads or creates `~/.android/adbkey`, encodes `adbkey.pub` in Android's `RSAPublicKey` layout (`len=64`, `n0inv`, `n`, `rr=R^2 mod n`, `e`), signs the 20-byte token with PKCS#1 v1.5 + SHA-1 DigestInfo, offers the key and waits for the user's "Allow USB debugging?" tap (`Error::Unauthorized` on timeout).
+- Multiplexed streams with one-write-in-flight flow control; reads are acknowledged after the caller consumes them.
+- Services: `shell:` (raw), `shell,v2:` (stdin/stdout/stderr/exit frames), `exec:`, `sync:` (`LIST`/`LIS2`, `STAT`/`STA2`, `RECV`/`RCV2`, `SEND`/`SND2`, 64 KiB `DATA` chunks), `reboot:`.
+- Typed `Device<C>` helpers: `getprop`, `getprops`, `shell`, `exec`, `screencap` (PNG), `list_dir`, `stat`, `pull` (stream of chunks), `pull_to_file`, `push_file`, `push_bytes`, `content_query` (rows as `BTreeMap<String,String>`, last column may contain ", "; row count cross-checked), `reboot`.
+- `host::HostClient`: `host:version`, `host:devices-l`, `host:track-devices`, `host:transport:<serial>` then any service, for machines where Android Studio owns the USB interface.
+- `track::watch_usb()` / `poll_usb()` attach/detach event streams.
+- CLI `rsadb`: `devices`, `shell`, `exec`, `pull`, `push`, `ls`, `screencap`, `getprop`, `connect`, `keygen`; flags `-s SERIAL`, `-t HOST[:PORT]`, `--server`, `--auth-wait SECS`, `--key PATH`.
+
+## Core API (Rust)
+
+```rust
+let key = rsadb::auth::load_or_generate(&rsadb::auth::default_key_paths()?, "user@host")?;
+let info = rsadb::transport::usb::find(None).await?;          // or usb::list()
+let transport = rsadb::transport::usb::open(&info).await?;    // or transport::tcp::connect(addr)
+let session = rsadb::Session::connect(transport, &key, std::time::Duration::from_secs(60)).await?;
+let device = rsadb::Device::new(session);
+let model = device.getprop("ro.product.model").await?;
+let out = device.shell("ls /sdcard").await?;                  // out.stdout, out.stderr, out.exit_code
+let png = device.screencap().await?;
+device.pull_to_file("/sdcard/a.jpg", std::path::Path::new("a.jpg")).await?;
+```
+
+Traits: `Transport` (send/recv/split), `Channel` (recv/send/close on one stream), `Connection` (open service, features). `Session` and `host::HostDevice` implement `Connection`; every service works over either.
+
+Errors: `rsadb::Error` variants `Protocol`, `Disconnected`, `Unauthorized`, `Unsupported`, `ServiceRefused`, `RemoteFailure`, `StreamClosed`, `ClaimFailed`, `NoDevice`, `Usb`, `Io`, `Key`, `Parse`, `InvalidArgument`, `Timeout`.
+
+Feature flags: `usb`, `tcp`, `host-client`, `cli` (all default), `hardware` (ignored real-device tests).
+
+## Limits (v0.1)
+
+- `A_STLS` (TLS auth, Android 11+ wireless pairing) returns `Error::Unsupported`; USB and `adb tcpip` work.
+- No `abb`, no `forward:`/`reverse:`, no sync compression, no background server.
+- Direct USB needs exclusive access: stop Google's adb server or use `--server`.
+
+## Files
+
+- README.md: overview, quick start, comparison, security notes, roadmap.
+- docs/protocol.md: wire protocol, handshake, pubkey layout, shell v2, sync.
+- docs/architecture.md: module layout and session internals.
+- tests/common/fake: in-process device emulator used by the tests.

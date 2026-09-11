@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: rsadb
+abstract: "A pure-Rust Android Debug Bridge (ADB) client library and CLI that speaks to devices directly over USB or TCP, or through a running adb server, without libusb or the adb binary."
+authors:
+  - given-names: Thomas
+    family-names: Braun
+version: 0.1.0
+date-released: "2026-09-11"
+license: "MIT OR Apache-2.0"
+repository-code: "https://github.com/tbraun96/rsadb"
+keywords:
+  - android
+  - adb
+  - usb
+  - rust
