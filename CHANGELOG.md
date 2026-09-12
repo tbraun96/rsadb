@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-09-12
+
+### Fixed
+
+- USB transfers inside a Tokio runtime panicked with "Awaiting blocking syscall without an async
+  runtime": `nusb`'s `tokio` feature is now enabled. Nothing that opened a device over USB from an
+  async context worked before this; the TCP path was unaffected, which is why the emulator never
+  showed it.
+- A fresh handshake could fail with "unexpected CLSE during handshake" or report the host key as
+  unauthorised, intermittently. A device still tearing down a previous session's streams leaves
+  those frames in the bulk endpoint, and they arrive before the banner. Stream frames are now
+  skipped during the handshake, up to a bound, instead of being treated as protocol errors.
+
+Both were found on the first real phone (a Samsung Galaxy S10, Android 12) and neither is
+reachable over TCP.
+
 ## [Unreleased]
 
 ## [0.1.0] - 2026-09-11

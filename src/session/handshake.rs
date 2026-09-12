@@ -42,6 +42,9 @@ pub async fn handshake<T: Transport>(
     key: &HostKey,
     auth_wait: Duration,
 ) -> Result<Negotiated> {
+    /// How many stale stream frames a device may send before the handshake gives up on it.
+    const MAX_STALE: u32 = 64;
+
     transport.configure(WireConfig::INITIAL);
     transport
         .send(Message::new(
@@ -54,6 +57,13 @@ pub async fn handshake<T: Transport>(
 
     let mut sent_signature = false;
     let mut sent_pubkey = false;
+    // A device that was talking to a previous session is still tearing its streams down, and the
+    // bulk endpoint keeps those frames across our open: a fresh handshake can therefore read a
+    // CLSE (or a late WRTE/OKAY) addressed to a session that no longer exists. Found on the first
+    // real phone -- the emulator is reached over TCP, where a new socket cannot inherit old
+    // traffic. Such frames are skipped rather than treated as protocol errors, but only so many,
+    // so a device sending nothing else can never spin here.
+    let mut skipped = 0_u32;
     loop {
         let msg = if sent_pubkey {
             tokio::time::timeout(auth_wait, transport.recv())
@@ -100,7 +110,15 @@ pub async fn handshake<T: Transport>(
                         .into(),
                 ));
             }
-            other => {
+            Command::Close | Command::Write | Command::Okay | Command::Sync => {
+                skipped += 1;
+                if skipped > MAX_STALE {
+                    return Err(Error::protocol(format!(
+                        "device sent {skipped} stream frames and no banner during the handshake"
+                    )));
+                }
+            }
+            other @ Command::Open => {
                 return Err(Error::protocol(format!(
                     "unexpected {other} during handshake"
                 )));

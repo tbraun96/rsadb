@@ -1,6 +1,6 @@
 [package]
 name = "rsadb"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.85"
 authors = ["Thomas Braun"]
@@ -30,7 +30,11 @@ hardware = []
 base64 = "0.22"
 bytes = "1"
 futures = "0.3"
-nusb = { version = "0.2", optional = true }
+# `tokio`: nusb's transfers are futures that must be driven by the runtime we already have.
+# Without it, opening a device inside a tokio context panics the moment a transfer is awaited
+# ("Awaiting blocking syscall without an async runtime") -- found on the first real phone, because
+# the emulator is reached over TCP and never touches this path.
+nusb = { version = "0.2", optional = true, features = ["tokio"] }
 rand = "0.8"
 rsa = { version = "0.9", features = ["pem"] }
 sha1 = { version = "0.10", features = ["oid"] }
