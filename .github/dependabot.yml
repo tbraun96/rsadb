@@ -11,6 +11,17 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # Held until `rsa` has a stable 0.10. `rsa` 0.9 signs through RustCrypto's `digest` 0.10
+      # and `rand_core` 0.6; sha1 0.11 is digest 0.11 and rand 0.9 is rand_core 0.9, so either
+      # bump fails to compile against the RSA we use -- `sha1::Sha1: AssociatedOid is not
+      # satisfied`, `OsRng: CryptoRngCore is not satisfied`. The only rsa that takes them is
+      # 0.10.0-rc, and a release candidate is not what signs this crate's host key. When rsa
+      # 0.10 is out, all three move together in one commit and these two lines come out.
+      - dependency-name: "sha1"
+        versions: [">=0.11"]
+      - dependency-name: "rand"
+        versions: [">=0.9"]
 
   - package-ecosystem: github-actions
     directory: /
