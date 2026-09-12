@@ -34,14 +34,29 @@ pub fn command(uri: &str, projection: &[&str], extra_args: &[&str]) -> String {
 
 /// Parse `content query` output into rows using the projected column order.
 pub fn parse_rows(output: &str, projection: &[&str]) -> Result<Vec<Row>> {
-    let mut rows = Vec::new();
+    let mut rows: Vec<Row> = Vec::new();
+    let last = projection.last().copied();
     for line in output.lines() {
         let line = line.trim_end_matches('\r');
-        if line.is_empty() || line == "No result found." {
-            continue;
-        }
         let Some(rest) = line.strip_prefix("Row: ") else {
-            return Err(Error::parse(format!("unexpected content line: {line:?}")));
+            // Not a row: either the empty-result notice, or the rest of a value that contained a
+            // newline. `content query` prints one row per line and does not escape anything, so a
+            // text message written on two lines arrives as two lines -- and dropping the second
+            // would silently shorten somebody's message. The projection puts the free-text column
+            // last for exactly this reason, so a continuation belongs to that column, newline and
+            // all. Found on a real phone: "Text STOP to end msgs." on the line above its sender.
+            if line.is_empty() || line == "No result found." {
+                continue;
+            }
+            match (last, rows.last_mut()) {
+                (Some(column), Some(row)) => {
+                    let value = row.entry(column.to_owned()).or_default();
+                    value.push('\n');
+                    value.push_str(line);
+                }
+                _ => return Err(Error::parse(format!("unexpected content line: {line:?}"))),
+            }
+            continue;
         };
         let (_, fields) = rest
             .split_once(' ')
@@ -84,6 +99,26 @@ pub fn count_rows(output: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_value_written_on_several_lines_is_kept_whole() {
+        // A text message with a newline in it. The continuation is part of the last column, not a
+        // broken row: shortening somebody's message would be the worst kind of quiet failure.
+        let out = "Row: 0 _id=1, address=+1555, body=Your code is 123.\nText STOP to end msgs.\nRow: 1 _id=2, address=+1666, body=short\n";
+        let rows = parse_rows(out, &["_id", "address", "body"]).unwrap_or_default();
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[0]["body"], "Your code is 123.\nText STOP to end msgs.");
+        assert_eq!(rows[1]["body"], "short");
+        // The cross-check counts rows, not lines, so a multi-line body cannot make the counts
+        // disagree and fail an honest copy.
+        assert_eq!(count_rows(out), 2);
+    }
+
+    #[test]
+    fn a_continuation_with_no_row_before_it_is_still_an_error() {
+        let out = "stray line with no row\n";
+        assert!(parse_rows(out, &["_id", "body"]).is_err());
+    }
 
     #[test]
     fn last_column_may_contain_commas() {
