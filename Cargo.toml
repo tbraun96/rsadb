@@ -35,7 +35,7 @@ futures = "0.3"
 # ("Awaiting blocking syscall without an async runtime") -- found on the first real phone, because
 # the emulator is reached over TCP and never touches this path.
 nusb = { version = "0.2", optional = true, features = ["tokio"] }
-rand = "0.8"
+rand = "0.9"
 rsa = { version = "0.9", features = ["pem"] }
 sha1 = { version = "0.10", features = ["oid"] }
 thiserror = "2"
