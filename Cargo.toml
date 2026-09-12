@@ -27,7 +27,7 @@ host-client = []
 hardware = []
 
 [dependencies]
-base64 = "0.22"
+base64 = "0.23"
 bytes = "1"
 futures = "0.3"
 # `tokio`: nusb's transfers are futures that must be driven by the runtime we already have.
