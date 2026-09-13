@@ -1,0 +1,71 @@
+<!-- The GitHub social preview. Rendered to assets/og-image.png at 1200x630 with:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
+       --screenshot=assets/og-image.png --window-size=1200,630 --hide-scrollbars \
+       file://$PWD/assets/og-image.html
+     Branding is CertifiedCopy's (https://certified.sh): the mark, ink #0F0D14, arrow #22C993,
+     IBM Plex -- the same sheet heic-rs uses, so the pair matches. The right-hand column is the
+     USB bulk pipe: host frames going out, device frames coming back, which is all this crate
+     does and the reason it needs no daemon in between. -->
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Plex; src: url(fonts/plex-sans-400.woff2) format('woff2'); font-weight: 400 }
+  @font-face { font-family: Plex; src: url(fonts/plex-sans-600.woff2) format('woff2'); font-weight: 600 }
+  @font-face { font-family: PlexMono; src: url(fonts/plex-mono-500.woff2) format('woff2'); font-weight: 500 }
+  * { margin: 0; box-sizing: border-box }
+  body { width: 1200px; height: 630px; background: #0F0D14; font-family: Plex, sans-serif;
+         color: #F4F2F9; display: grid; grid-template-columns: 1fr 330px; overflow: hidden }
+  .glow { position: absolute; inset: -30% -10% auto -25%; height: 90%;
+          background: radial-gradient(60% 60% at 30% 40%, rgba(34,201,147,.17), transparent 70%) }
+  main { padding: 62px 0 58px 64px; display: flex; flex-direction: column; position: relative }
+  .brow { display: flex; align-items: center; gap: 13px; color: #9A94AE; font-size: 19px;
+          letter-spacing: .015em }
+  .brow svg { width: 27px; height: 32px }
+  .brow b { color: #F4F2F9; font-weight: 600 }
+  h1 { font-family: PlexMono, monospace; font-weight: 500; font-size: 104px; letter-spacing: -.035em;
+       margin-top: 38px; line-height: 1 }
+  h1 i { font-style: normal; color: #22C993 }
+  p { font-size: 28px; line-height: 1.42; color: #C9C4D6; margin-top: 22px; max-width: 660px }
+  p b { color: #F4F2F9; font-weight: 600 }
+  ul { list-style: none; padding: 0; display: flex; gap: 11px; margin-top: auto }
+  li { font-family: PlexMono, monospace; font-size: 15.5px; padding: 9px 15px; white-space: nowrap; border-radius: 999px;
+       border: 1px solid #2B2638; color: #C9C4D6; background: #17141F }
+  li.hot { border-color: rgba(34,201,147,.45); color: #22C993; background: rgba(34,201,147,.09) }
+  footer { margin-top: 26px; font-family: PlexMono, monospace; font-size: 18px; color: #7A7490 }
+  footer b { color: #22C993; font-weight: 500 }
+  aside { display: flex; flex-direction: column; justify-content: center; gap: 14px;
+          padding: 62px 64px 58px 0 }
+  .frame { font-family: PlexMono, monospace; font-size: 15px; border-radius: 11px; padding: 11px 14px;
+           background: #1B1826; border: 1px solid #272231; color: #C9C4D6; display: flex; gap: 10px;
+           align-items: baseline; white-space: nowrap }
+  .frame span { color: #6E6880 }
+  .frame.out { border-color: rgba(34,201,147,.4); color: #22C993; background: rgba(34,201,147,.08) }
+  .frame.out span { color: rgba(34,201,147,.65) }
+</style>
+<div class="glow"></div>
+<main>
+  <div class="brow">
+    <svg viewBox="22 30 184 218" fill="none" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M120 66A84 84 0 1 0 174 214" stroke="#F4F2F9"/>
+      <path d="M120 66H192M170 44L192 66L170 88" stroke="#22C993"/>
+    </svg>
+    <span>a <b>CertifiedCopy</b> crate &nbsp;·&nbsp; Avarok</span>
+  </div>
+  <h1>rs<i>adb</i></h1>
+  <p>The Android Debug Bridge, in pure Rust. Straight to <b>adbd</b> over USB or TCP — no
+     <b>adb</b> binary, no server on port 5037, no libusb, no C toolchain.</p>
+  <ul>
+    <li class="hot">no adb daemon</li>
+    <li>#![forbid(unsafe_code)]</li>
+    <li>tokio, USB via nusb</li>
+    <li>MIT OR Apache-2.0</li>
+  </ul>
+  <footer><b>certified.sh</b> &nbsp;·&nbsp; crates.io/crates/rsadb</footer>
+</main>
+<aside>
+  <div class="frame out">CNXN <span>host::features</span></div>
+  <div class="frame">AUTH <span>token</span></div>
+  <div class="frame out">AUTH <span>signature</span></div>
+  <div class="frame">CNXN <span>device::ok</span></div>
+  <div class="frame out">OPEN <span>shell,v2:df -k</span></div>
+  <div class="frame">WRTE <span>stdout · exit 0</span></div>
+</aside>

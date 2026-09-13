@@ -1,10 +1,33 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/mark-ondark.svg">
+  <img src="assets/mark.svg" alt="CertifiedCopy" height="72">
+</picture>
+
 # rsadb
 
-[![CI](https://github.com/tbraun96/rsadb/actions/workflows/ci.yml/badge.svg)](https://github.com/tbraun96/rsadb/actions/workflows/ci.yml)
-[![docs.rs](https://img.shields.io/docsrs/rsadb)](https://docs.rs/rsadb)
-[![crates.io](https://img.shields.io/crates/v/rsadb)](https://crates.io/crates/rsadb)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#licence)
-![MSRV 1.85](https://img.shields.io/badge/MSRV-1.85-informational)
+**The Android Debug Bridge, in pure Rust.**
+
+Straight to `adbd` over USB or TCP. No `adb` binary, no server on port 5037,
+no libusb, no C toolchain.
+
+[![crates.io](https://img.shields.io/crates/v/rsadb.svg?style=flat-square&color=12B981)](https://crates.io/crates/rsadb)
+[![docs.rs](https://img.shields.io/docsrs/rsadb?style=flat-square)](https://docs.rs/rsadb)
+[![CI](https://img.shields.io/github/actions/workflow/status/tbraun96/rsadb/ci.yml?style=flat-square&label=CI)](https://github.com/tbraun96/rsadb/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg?style=flat-square)](#licence)
+[![unsafe](https://img.shields.io/badge/unsafe-forbidden-12B981.svg?style=flat-square)](#why-pure-rust)
+[![MSRV](https://img.shields.io/badge/MSRV-1.85-6E6880.svg?style=flat-square)](#quick-start)
+
+[**certified.sh**](https://certified.sh) &nbsp;·&nbsp;
+[Docs](https://docs.rs/rsadb) &nbsp;·&nbsp;
+[Quick start](#quick-start) &nbsp;·&nbsp;
+[FAQ](#faq) &nbsp;·&nbsp;
+[Avarok](https://avarok.net)
+
+</div>
+
+---
 
 A pure-Rust implementation of the Android Debug Bridge (ADB) client
 protocol. It talks to `adbd` on the phone directly over USB or TCP: no

@@ -12,7 +12,19 @@ documentation = "https://docs.rs/rsadb"
 readme = "README.md"
 keywords = ["adb", "android", "usb", "debugging", "pure-rust"]
 categories = ["development-tools", "hardware-support", "command-line-utilities"]
-exclude = [".github/", "docs/", "tasks/", "deny.toml", "rustfmt.toml"]
+exclude = [
+    ".github/",
+    "docs/",
+    "tasks/",
+    "deny.toml",
+    "rustfmt.toml",
+    # The README's mark ships -- crates.io resolves relative links against the repository, but a
+    # vendored copy should still be able to draw its own header. What makes the social preview
+    # does not: two woff2 faces and a 150 KB picture GitHub reads and nobody else does.
+    "assets/fonts/",
+    "assets/og-image.png",
+    "assets/og-image.html",
+]
 
 [package.metadata.docs.rs]
 all-features = true
